@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define INCREMENT 25
+
+int main()
+{
+	size_t phrase_count = 0;
+	size_t collection_size = 100;
+	char *ptmp;
+	char **ptr_collection = NULL;
+	char *ptr_phrase = NULL;
+	char phrase[100] = {};
+	ptr_collection = (char**)malloc(collection_size * sizeof(char**));
+	
+	for (;;)
+	{
+
+		fgets(phrase, sizeof(phrase), stdin);		
+		if (strcmp(phrase, "EOF\n") == 0)
+		{
+			printf("quit input\n");
+			break;
+		}
+		
+		if (!(ptr_phrase = (char*)calloc(sizeof(phrase),sizeof(char))))
+		{
+			printf("Memory Alloaction Failed\n");
+			return 1;
+		}
+		
+		strcpy_s(ptr_phrase,sizeof(phrase), phrase);
+		if (phrase_count == collection_size)
+		{
+			collection_size += INCREMENT;
+			ptr_collection = (char**)realloc(ptr_collection, collection_size * sizeof(char**));
+		}
+		
+		ptr_collection[phrase_count] = ptr_phrase;
+		
+		
+		phrase_count++;
+		
+		
+		
+	}
+
+	for (int i = 0; i < phrase_count; i++)
+	{
+		for (int j = 0; j < (phrase_count-i-1); j++)
+		{
+			if (strlen(ptr_collection[j]) > strlen(ptr_collection[j + 1]))
+			{			
+				ptmp = ptr_collection[j];				
+				ptr_collection[j] = ptr_collection[j + 1];				
+				ptr_collection[j + 1] = ptmp;
+			}
+		}
+	}
+	printf("OUTPUT\n");
+	for (int i = 0; i < phrase_count; i++)
+		printf("%s",ptr_collection[i]);
+    return 0;
+}
