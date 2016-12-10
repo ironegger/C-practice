@@ -61,5 +61,12 @@ int main()
 	printf("OUTPUT\n");
 	for (int i = 0; i < phrase_count; i++)
 		printf("%s",ptr_collection[i]);
+	for(int i=0;i<phrase_count;i++)
+		{
+			free(ptr_collection[i]);
+			ptr_collection[i]=NULL;
+		}
+	free(ptr_collection);
+	ptr_collection=NULL;
     return 0;
 }
