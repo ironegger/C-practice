@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(int argc, char *argv[])
+{
+	FILE* pFile =NULL;
+	char mode[3] ={};
+	char filename[255]={};
+	char buff[1000]={};
+	size_t length =0;
+	long word_count=0;
+	long line_count=0;
+	if(argc==1)
+	{
+	printf("Enter the filename you would like to open\n");
+	
+	fgets(filename,sizeof(filename),stdin);
+	length=strlen(filename);
+	filename[length-1]='\0';
+	printf("In what mode do you wish to open the file 'r' for read,'w' for write, 'a' for append\n");
+	fgets(mode,sizeof(mode),stdin);
+	//printf("%s",mode);
+	length=strlen(mode);
+	if(mode[length-1]!='+')
+		mode[length-1]='\0';
+	if(mode[0]!='r'&&mode[0]!='w'&&mode[0]!='a')
+	{
+		printf("Wrong Mode Input :%c.\n",mode[0]);
+		return 1;
+	}
+	}
+	else
+	{
+		if(argc==2)
+		{
+			printf("The program takes two argument, One given\n");
+			return 1;
+		}
+		else
+		{
+			strcpy(filename,argv[1]);
+			strcpy(mode,argv[2]);
+		}
+	}
+	if((pFile=fopen(filename,mode))==NULL)
+	{
+		printf("Error Opening Filename :%s \n",filename);
+		printf("Please Check the Permission by using 'test' -%s command\n",mode);
+		return 1;
+	}
+	if(mode[0]=='r')
+	{
+			
+		while((fgets(buff,1000,pFile))!=NULL)
+		{
+			line_count+=1;
+			word_count+=(long)strlen(buff);
+			printf("%s",buff);
+		}
+		printf("\n\n##Total Words:%ld;Total Lines:%ld\n",word_count,line_count);
+		fclose(pFile);
+		pFile=NULL;
+		return 0;
+	}
+	if(mode[0]=='w')
+	{
+		warning:
+		printf("You are about to overwrite the existed file, type 'Y' to confime\n");
+		char con;
+		scanf("%c",&con);
+		switch(con)
+		{
+			case 'y':case 'Y':
+			break;
+			case 'N':case 'n':
+			printf("Cancel Overwritting procedure\n");
+			return 0;
+			break;
+			default:
+			printf("Invalid response\n");
+			goto warning;
+			break;
+		}
+		for(;;)
+		{
+			printf("> ");
+			fgets(buff,sizeof(buff),stdin);
+			if(strcmp(buff,"ENDOFFILE\n")==0)
+			{
+				fclose(pFile);
+				pFile=NULL;
+				printf("\n##Writing Complete\n");
+				return 0;
+			}
+			fputs(buff,pFile);
+			memset(buff,0,sizeof(buff));
+		}
+
+	}
+	if(mode[0]=='a')
+	{
+		printf("Append Mode. The input will be added to the end of file\n");
+		for(;;)
+		{
+			printf("> ");
+			fgets(buff,sizeof(buff),stdin);
+			if(strcmp(buff,"ENDOFFILE\n")==0)
+			{
+				fclose(pFile);
+				pFile=NULL;
+				printf("\n##Appending Complete\n");
+				return 0;
+			}
+			fputs(buff,pFile);
+			memset(buff,0,sizeof(buff));
+		}
+	}
+return 0;
+}
